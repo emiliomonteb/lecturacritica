@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lectura CríticAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #041b83, #041b83);
+            padding: 5px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, blue, #00f2fe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .logo-icon::before {
+            content: "🔍";
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .logo-icon::after {
+            content: "📄";
+            font-size: 16px;
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: white;
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: whitesmoke;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: whitesmoke;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 200px;
+            height: 60px;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #667eea, #f8f9fa, #667eea);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image::before {
+            content: "📚      🔬      💡";
+            position: absolute;
+            font-size: 0.5em;
+            opacity: 0.8;
+        }
+
+        .menu-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .menu-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: 20px 25px;
+            background: linear-gradient(45deg, #2343cfc9, #2343cfc9);
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s ease;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(45deg, #60b3e4, #60b3e4);
+            font-size: 1.1em;
+            color: #2343cfc9
+        }
+
+        .menu-item::before {
+            content: "▶";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item.active::before {
+            transform: rotate(90deg);
+        }
+
+        .menu-content {
+            max-height: 0;
+            overflow: hidden;
+            background: white;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 25px;
+        }
+
+        .menu-content.active {
+            max-height: 1000px;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .content-placeholder {
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            margin: 10px 0;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .title-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .menu-item {
+                padding: 15px 20px;
+                font-size: 1em;
+            }
+
+            .menu-content.active {
+                padding: 20px;
+                max-height: 800px;
+            }
+
+            .hero-image {
+                height: 150px;
+                font-size: 3em;
+            }
+        }
+
+        /* Estilos para contenido de texto */
+        .content-text {
+            padding: 10px 0;
+        }
+
+        .content-text p {
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 1em;
+        }
+
+        .content-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-text strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .content-text em {
+            color: #4facfe;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .casp-blocks {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4facfe;
+        }
+
+        .casp-block {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .casp-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .block-letter {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .block-text {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .content-text p {
+                font-size: 0.95em;
+                text-align: left;
+            }
+
+            .casp-blocks {
+                padding: 15px;
+            }
+
+            .block-letter {
+                width: 25px;
+                height: 25px;
+                font-size: 1em;
+                margin-right: 12px;
+            }
+
+            .block-text {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .menu-item {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(45deg, #041b83, #041b83);
+            border-radius: 15px;
+            color: whitesmoke;
+            font-size: 0.9em;
+        }
+
+        /* Estilos para las herramientas */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .tool-card:hover::before {
+            left: 100%;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-icon {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .tool-name-button {
+            background: linear-gradient(45deg, #2343cfc9, #2343cfc9);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .tool-name-button:hover:not(:disabled) {
+            background: linear-gradient(45deg, #60b3e4, #60b3e4);
+            color: #2343cfc9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .tool-name-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .tool-name-button:disabled:hover {
+            background: #bdc3c7;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tool-card p {
+            color: #5a6c7d;
+            font-size: 0.8em;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .tool-card {
+                padding: 12px;
+            }
+
+            .tool-icon {
+                font-size: 1.5em;
+            }
+
+            .tool-name-button {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+
+            .tool-card p {
+                font-size: 0.75em;
+            }
+        }
+
+        /* Estilos para la sección de créditos */
+        .credits-content {
+            padding: 10px 0;
+        }
+
+        .credit-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .credit-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .credit-text {
+            color: #555;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .web-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        .web-link:hover {
+            color: #667eea;
+            background: rgba(79, 172, 254, 0.2);
+        }
+
+        .web-icon {
+            font-size: 1em;
+        }
+
+        .reference-list {
+            margin-top: 15px;
+        }
+
+        .reference-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .reference-item strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .reference-text {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .author-section {
+            background: linear-gradient(135deg, #02aa4e 0%, #02aa4e 100%);
+            color: white;
+            border-left: 4px solid #fff;
+            text-align: center;
+        }
+
+        .author-credit {
+            margin: 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .author-icon {
+            font-size: 1.3em;
+        }
+
+        .linkedin-link {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            padding: 4px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .linkedin-link:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .linkedin-icon {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .credit-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .reference-item {
+                padding: 12px;
+            }
+
+            .reference-text {
+                font-size: 0.85em;
+            }
+
+            .author-credit {
+                font-size: 1em;
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="title-container">
+                <div class="logo-icon"></div>
+                <h1>Lectura CríticAI</h1>
+            </div>
+            <p class="subtitle">Herramienta para la evaluación crítica de evidencia científica</p>
+            <div class="hero-image"></div>
+        </header>
+
+        <main>
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(0)">
+                    <span class="icon">📖</span>
+                    <span>¿Qué es la lectura crítica de la evidencia científica?</span>
+                </div>
+                <div class="menu-content" id="content-0">
+                    <div class="content-text">
+                        <p>💡 La <strong>lectura crítica de la evidencia científica</strong> consiste en examinar de forma rigurosa y sistemática los estudios publicados para valorar su <strong>validez</strong>, la <strong>relevancia y precisión</strong> de sus resultados y su <strong>aplicabilidad</strong> a la práctica clínica, evitando interpretaciones acríticas que puedan sesgar la toma de decisiones.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(1)">
+                    <span class="icon">🔬</span>
+                    <span>¿Qué es el método CASPe?</span>
+                </div>
+                <div class="menu-content" id="content-1">
+                    <div class="content-text">
+                        <p>📌 El <strong>método CASP</strong> (Critical Appraisal Skills Programme) operacionaliza este análisis mediante listas de verificación gratuitas, específicas para cada diseño (ensayos clínicos, cohortes, estudios diagnósticos, revisiones sistemáticas, cualitativos, etc.). Cada checklist se organiza —salvo actualizaciones menores— en tres bloques de preguntas:</p>
+                        
+                        <div class="casp-blocks">
+                            <div class="casp-block">
+                                <span class="block-letter">A)</span>
+                                <span class="block-text">¿Son válidos los resultados?</span>
+                            </div>
+                            <div class="casp-block">
+                                <span class="block-letter">B)</span>
+                                <span class="block-text">¿Qué muestran los resultados?</span>
+                            </div>
+                            <div class="casp-block">
+                                <span class="block-letter">C)</span>
+                                <span class="block-text">¿Servirán localmente?</span>
+                            </div>
+                        </div>
+                        
+                        <p>Esta estructura obliga al lector a responder <em>Sí / No / No sé</em> y a justificar cada opción, guiando un proceso sistemático, transparente y reproducible que aumenta la coherencia de las decisiones y deja constancia del razonamiento seguido.</p>
+                        
+                        <p>📌 La <strong>Red CASPe</strong> (Critical Appraisal Skills Programme Español) es la adaptación sin ánimo de lucro fundada en 1998 para el ámbito hispanohablante. Coordinada desde Alicante y articulada en nodos locales, ofrece talleres presenciales y virtuales, materiales didácticos, calculadoras y un aula virtual para formar a clínicos, investigadores y docentes en lectura crítica. Su objetivo es democratizar el acceso a herramientas CASP y promover decisiones sanitarias basadas en pruebas sólidas y críticamente evaluadas.</p>
+                        
+                        <p class="web-link-paragraph">
+                            🌐 Toda la información sobre la metodología CASPe la puedes encontrar en su web 
+                            <a href="https://redcaspe.org" target="_blank" rel="noopener noreferrer" class="web-link">
+                                <span class="web-icon">🌐</span> redcaspe.org
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(2)">
+                    <span class="icon">🛠️</span>
+                    <span>Herramientas de lectura crítica</span>
+                </div>
+                <div class="menu-content" id="content-2">
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-icon">🎯</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-67f8e40d0f008191847a4c37d6563063-lectura-critica-caspe-de-ensayos-clinicos')">
+                                Ensayos clínicos aleatorizados
+                            </button>
+                            <p>Herramienta para evaluar la calidad metodológica de ensayos clínicos controlados aleatorizados</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="tool-icon">📊</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-684f0c0c54ac8191b2282945293cfd92-lectura-critica-caspe-de-revisiones?model=o3')">
+                                Revisiones
+                            </button>
+                            <p>Evaluación crítica de revisiones sistemáticas y metaanálisis de la literatura científica</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="tool-icon">👥</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-68505014977c81918c3cdca6010bc81f-lectura-critica-de-estudios-de-cohortes?model=o3')">
+                                Estudios de cohortes
+                            </button>
+                            <p>Análisis de estudios longitudinales prospectivos y retrospectivos de cohortes</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="tool-icon">🔍</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-68504ce8bcf88191bef5db11e5c913a0-lectura-critica-de-estudios-casos-y-controles?model=o3')">
+                                Estudios de casos y controles
+                            </button>
+                            <p>Herramienta para evaluar estudios observacionales de casos y controles</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="tool-icon">💰</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-685051ae71d88191a5bc618b51589758-lectura-critica-de-evaluaciones-economicas?model=o3')">
+                                Evaluaciones económicas
+                            </button>
+                            <p>Análisis crítico de estudios de evaluación económica en salud</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="tool-icon">💬</div>
+                            <button class="tool-name-button" onclick="openTool('https://chatgpt.com/g/g-685054a4d7b0819198c48d810db6cc77-lectura-critica-de-estudios-cualitativos?model=o3')">
+                                Estudios cualitativos
+                            </button>
+                            <p>Evaluación de la calidad metodológica de investigación cualitativa</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(3)">
+                    <span class="icon">🔬</span>
+                    <span>Opciones de investigación profunda</span>
+                </div>
+                <div class="menu-content" id="content-3">
+                    <div class="content-text">
+                        <p>💡 Si necesitas hacer <strong>análisis de lectura crítica con mayor profundidad o precisión</strong>, puedes utilizar las opciones de <em>"Investigación profunda (deep research)"</em> de los LLM.</p>
+                        
+                        <p>Para ello, debes seguir los siguientes pasos:</p>
+                        
+                        <div class="casp-blocks">
+                            <div class="casp-block">
+                                <span class="block-letter">1</span>
+                                <span class="block-text">Anexar el archivo del estudio a analizar</span>
+                            </div>
+                            <div class="casp-block">
+                                <span class="block-letter">2</span>
+                                <span class="block-text">Anexar la plantilla correspondiente</span>
+                            </div>
+                            <div class="casp-block">
+                                <span class="block-letter">3</span>
+                                <span class="block-text">Escribir un prompt detallado indicando la tarea a desarrollar</span>
+                            </div>
+                            <div class="casp-block">
+                                <span class="block-letter">4</span>
+                                <span class="block-text">Activar la opción "Investigación profunda (deep research)" del LLM</span>
+                            </div>
+                        </div>
+                        
+                        <p>En la web de CASPe puedes descargar las plantillas de cada tipo de estudio:</p>
+                        <p>
+                            <a href="https://redcaspe.org/materiales/" target="_blank" rel="noopener noreferrer" class="web-link">
+                                <span class="web-icon">📥</span> redcaspe.org/materiales/
+                            </a>
+                        </p>
+                        
+                        <p><strong>Como orientación, te propongo el siguiente ejemplo de prompt:</strong></p>
+                        
+                        <div class="credit-section">
+                            <p class="reference-text" style="color: #333; font-style: normal; font-size: 0.95em; line-height: 1.6;">
+                                "Actúa como un profesional en lectura crítica de evidencia científica. A continuación te voy a ofrecer un archivo donde se recoge una plantilla modelo sobre como realizar una lectura crítica de un <strong style="color: red">[TIPO DE ESTUDIO]</strong> utilizando la metodología CASPe. Aplica este plantilla para hacer una lectura crítica del artículo que te presento en otro archivo sobre <strong style="color: red">[DATOS DEL ESTUDIO]</strong>. Debes hacer un análisis exhaustivo y riguroso para verificar adecuadamente la validez, la relevancia y precisión de sus resultados y su aplicabilidad a la práctica clínica, evitando interpretaciones acríticas que puedan sesgar la toma de decisiones."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(4)">
+                    <span class="icon">⚙️</span>
+                    <span>Cómo funciona esta aplicación</span>
+                </div>
+                <div class="menu-content" id="content-4">
+                    <div class="content-text">
+                        <div class="credit-section">
+                        🔴 Esta aplicación se ha desarrollado para el acceso a diferentes chatbots configurados para realizar <strong style="color: red">lectura crítica de publicaciones científicas</strong> según la metodología CASPe
+                        <p></p>
+                        <p>🔴 En el bloque "Herramientas de lectura crítica" tienes el enlace a diferentes <strong style="color: red">chatbots</strong> configurados para realizar una lectura crítica de diferentes tipos de estudios científicos (ensayos clínicos, cohortes, casos y controles, estudios farmacoeconómicos, revisiones...). Debes acceder a uno u otro en función del tipo de estudio que quieras analizar.</p>
+                        <p>🔴 Cada chatbot es un <strong style="color: red">recurso externo</strong> a esta aplicación. Una vez se ha accedido a un chatbot, hay que seguir sus indicaciones e instrucciones de funcionamiento.</p>
+                        <p>🔴 Estos chatbots han sido desarrollados para su uso por <strong style="color: red">profesionales sanitarios</strong> con conocimiento y experiencia suficiente como para realizar análisis de lectura crítica de publicaciones científicas.</p>
+                        <p>🔴 Los <strong style="color: red">resultados obtenidos</strong> con cada uno de los chatbots deben ser analizados cuidadosamente para verificar que el análisis se ha realizado correctamente.</p>
+                        <p>🔴 La <strong style="color: red">responsabilidad</strong> de la aplicación (o no) de los resultados obtenidos es exclusivamente del profesional sanitario que ha realizado el análisis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-item" onclick="toggleContent(5)">
+                    <span class="icon">👥</span>
+                    <span>Créditos</span>
+                </div>
+                <div class="menu-content" id="content-5">
+                    <div class="credits-content">
+                        <div class="credit-section">
+                            <p class="credit-text">
+                                <strong>Metodología CASPe:</strong> Toda la información sobre la metodología CASPe la puedes encontrar en su web 
+                                <a href="https://redcaspe.org" target="_blank" rel="noopener noreferrer" class="web-link">
+                                    <span class="web-icon">🌐</span> redcaspe.org
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="credit-section">
+                            <h3>📚 Plantillas utilizadas para la configuración de los chatbots:</h3>
+                            
+                            <div class="reference-list">
+                                <div class="reference-item">
+                                    <strong>• Ensayos clínicos aleatorizados:</strong>
+                                    <p class="reference-text">Cabello JB, Pijoan JI, Lectura crítica de estudios de tratamiento. Ensayos aleatorios. In Cabello Juan B, Editor. Lectura critica de la evidencia clínica. 2ª Ed, Barcelona. Elsevier, 2022</p>
+                                </div>
+
+                                <div class="reference-item">
+                                    <strong>• Revisiones:</strong>
+                                    <p class="reference-text">Cabello, J.B. por CASPe. Plantilla para ayudarte a entender una Revisión Sistemática. En: CASPe. Guías CASPe de Lectura Crítica de la Literatura Médica. Alicante: CASPe; 2005. Cuaderno I. p.13-17</p>
+                                </div>
+
+                                <div class="reference-item">
+                                    <strong>• Estudios de cohortes:</strong>
+                                    <p class="reference-text">Cabello, J.B. por CASPe. Plantilla para ayudarte a entender Estudios de Cohortes. En: CASPe. Guías CASPe de Lectura Crítica de la Literatura Médica. Alicante: CASPe; 2005. Cuaderno II. p.23-27</p>
+                                </div>
+
+                                <div class="reference-item">
+                                    <strong>• Estudios de casos y controles:</strong>
+                                    <p class="reference-text">Cabello, J.B. por CASPe. Plantilla para ayudarte a entender un Estudio de Casos y Controles. En: CASPe. Guías CASPe de Lectura Crítica de la Literatura Médica. Alicante: CASPe; 2005. Cuaderno II. p.13-19</p>
+                                </div>
+
+                                <div class="reference-item">
+                                    <strong>• Evaluaciones económicas:</strong>
+                                    <p class="reference-text">Cabello, J.B. por CASPe. Plantilla para ayudarte a entender una Evaluación Económica. En: CASPe. Guías CASPe de Lectura Crítica de la Literatura Médica. Alicante: CASPe; 2005. Cuaderno I. p.31-35</p>
+                                </div>
+
+                                <div class="reference-item">
+                                    <strong>• Estudios cualitativos:</strong>
+                                    <p class="reference-text">Cano Arana, A., González Gil, T., Cabello López, J.B. por CASPe. Plantilla para ayudarte a entender un estudio cualitativo. En: CASPe. Guías CASPe de Lectura Crítica de la Literatura Médica. Alicante: CASPe; 2010. Cuaderno III. p.3-8</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="credit-section author-section">
+                            <p class="author-credit">
+                                <span class="author-icon">👨‍💻</span>
+                                <span>Aplicación creada por Emilio Monte Boquet</span>
+                                <a href="https://www.linkedin.com/in/emilio-monte-boquet" target="_blank" rel="noopener noreferrer" class="linkedin-link">
+                                    <span class="linkedin-icon">🌐</span>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2025 Lectura CríticAI - Herramienta para la lectura crítica de la evidencia científica</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleContent(index) {
+            const content = document.getElementById(`content-${index}`);
+            const menuItem = content.previousElementSibling;
+            
+            // Cerrar otras secciones
+            const allContents = document.querySelectorAll('.menu-content');
+            const allMenuItems = document.querySelectorAll('.menu-item');
+            
+            allContents.forEach((item, i) => {
+                if (i !== index) {
+                    item.classList.remove('active');
+                    allMenuItems[i].classList.remove('active');
+                }
+            });
+            
+            // Toggle la sección actual
+            content.classList.toggle('active');
+            menuItem.classList.toggle('active');
+        }
+
+        // Agregar efecto de entrada suave
+        window.addEventListener('load', function() {
+            const sections = document.querySelectorAll('.menu-section');
+            sections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.style.opacity = '0';
+                    section.style.transform = 'translateY(20px)';
+                    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    requestAnimationFrame(() => {
+                        section.style.opacity = '1';
+                        section.style.transform = 'translateY(0)';
+                    });
+                }, index * 100);
+            });
+        });
+
+        // Función para abrir herramientas
+        function openTool(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        }
+    </script>
+</body>
+</html>
